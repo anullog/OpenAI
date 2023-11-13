@@ -213,4 +213,19 @@ public extension OpenAIProtocol {
             }
         }
     }
+
+    func textToSpeech(
+        querry: TextToSpeechQuery
+    ) async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            textToSpeech(query: querry) { result in
+                return switch result {
+                case .success(let success):
+                    continuation.resume(returning: success)
+                case .failure(let failure):
+                    continuation.resume(throwing: failure)
+                }
+            }
+        }
+    }
 }

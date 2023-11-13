@@ -111,9 +111,31 @@ final public class OpenAI: OpenAIProtocol {
     public func audioTranslations(query: AudioTranslationQuery, completion: @escaping (Result<AudioTranslationResult, Error>) -> Void) {
         performRequest(request: MultipartFormDataRequest<AudioTranslationResult>(body: query, url: buildURL(path: .audioTranslations)), completion: completion)
     }
+
+    public func textToSpeech(query: TextToSpeechQuery, completion: @escaping (Result<Data, Error>) -> Void) {
+        performNonJSONReturningRequest(request: JSONRequest<Data>(body: query, url: buildURL(path: .textToSpeech)), completion: completion)
+    }
 }
 
 extension OpenAI {
+
+    func performNonJSONReturningRequest(request: any URLRequestBuildable, completion: @escaping (Result<Data, Error>) -> Void) {
+        do {
+            let request = try request.build(token: configuration.token, organizationIdentifier: configuration.organizationIdentifier, timeoutInterval: configuration.timeoutInterval)
+            let task = session.dataTask(with: request) { data, _, error in
+                if let error = error {
+                    return completion(.failure(error))
+                }
+                guard let data = data else {
+                    return completion(.failure(OpenAIError.emptyData))
+                }
+                completion(.success(data))
+            }
+            task.resume()
+        } catch {
+            completion(.failure(error))
+        }
+    }
 
     func performRequest<ResultType: Codable>(request: any URLRequestBuildable, completion: @escaping (Result<ResultType, Error>) -> Void) {
         do {
@@ -200,7 +222,9 @@ extension APIPath {
     static let images = "/v1/images/generations"
     static let imageEdits = "/v1/images/edits"
     static let imageVariations = "/v1/images/variations"
-    
+
+    static let textToSpeech = "/v1/audio/speech"
+
     func withPath(_ path: String) -> String {
         self + "/" + path
     }

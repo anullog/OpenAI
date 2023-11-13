@@ -230,4 +230,6 @@ public protocol OpenAIProtocol {
                          Returns a `Result` of type `AudioTranslationResult` if successful, or an `Error` if an error occurs.
      **/
     func audioTranslations(query: AudioTranslationQuery, completion: @escaping (Result<AudioTranslationResult, Error>) -> Void)
+
+    func textToSpeech(query: TextToSpeechQuery, completion: @escaping (Result<Data, Error>) -> Void)
 }

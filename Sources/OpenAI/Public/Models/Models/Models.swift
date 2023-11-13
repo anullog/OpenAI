@@ -58,7 +58,11 @@ public extension Model {
     // Transcriptions / Translations
     
     static let whisper_1 = "whisper-1"
-    
+
+    // Text to Speech
+
+    static let tts_1 = "tts-1"
+
     // Fine Tunes
     
     /// Most capable GPT-3 model. Can do any task the other models can do, often with higher quality.
